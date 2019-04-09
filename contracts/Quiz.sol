@@ -2,6 +2,8 @@ pragma solidity ^0.5.0;
 
 contract Quiz {
 
+   // Structure of a Question
+   // Each Question has four answer choices and only one correct anser choice
    struct Question {
       string question;
       string correctAns;
@@ -10,6 +12,7 @@ contract Quiz {
       string wrongAns3;
    }
 
+   // Structure of a Quiz
    struct QuizEvent {
       uint id;
       string name;
@@ -40,39 +43,45 @@ contract Quiz {
       quizzes[numQuizzes] = QuizEvent(numQuizzes, _name, _fee, _pool, Question(_question, _ans1, _ans2, _ans3, _ans4));
    }
 
-   // Requires that the account trying to access the quiz information has not taken it before
    // Requires that the quiz event exists
+   // Requires that the account trying to access the quiz information has not taken it before
    // Once the account receives the quiz, add the account to the list of accounts that have
    // attempted this quiz
    function getQuiz (uint _quizId) public {
-      require(!quizzes[_quizId].attempts[msg.sender]);
       require(_quizId > 0 && _quizId <= numQuizzes);
+      require(!quizzes[_quizId].attempts[msg.sender]);
       quizzes[_quizId].attempts[msg.sender] = true;
       emit fetchquiz(_quizId);
    }
 
-   // Requires that the account has not attempted the quiz before
    // Requires that the quiz exists
-   function payToPlay(uint _quizId) {
-      require(!quizzes[_quizId].attempts[msg.sender]);
+   // Requires that the account has not attempted the quiz before
+   // The contract's account balance will hold all of the ether for all QuizEvent pools
+   // Add fee to the pool of _quizId
+   function payToPlay(uint _quizId) payable {
       require(_quizId > 0 && _quizId <= numQuizzes);
+      require(!quizzes[_quizId].attempts[msg.sender]);
+      this.balance += msg.value;             // Do we need this ??? ---------------------------
+      quizzes[_quizId].pool += msg.value;
    }
 
    // Requires that the quiz exists
-   // Returns the current amount of the pool of QuizEvent _quizId
+   // Returns the current pool amount of the QuizEvent _quizId
    function getPoolAmount(uint _quizId) public returns (uint) {
       require(_quizId > 0 && _quizId <= numQuizzes);
       return quizzes[_quizId].pool;
    }
 
-   // Requires that the account has attempted the quiz
    // Requires that the quiz event exists
+   // Requires that the account has paid the fee to attempt the quiz
+   // Requires that the account has attempted the quiz
    // Hashes the question's correct answer and the answer submitted by the account and compares
    // the two Hashes
    // If the two hashes are equal, then return true, otherwise false
    function scoreAttempt (uint _quizId, string memory _ans) public returns (bool) {
-      require(quizzes[_quizId].attempts[msg.sender]);
       require(_quizId > 0 && _quizId <= numQuizzes);
+      require(quizzes[_quizId].hasPaid[msg.sender]);
+      require(quizzes[_quizId].attempts[msg.sender]);
 
       if(keccak256(abi.encodePacked(quizzes[_quizId].q1.correctAns)) == keccak256(abi.encodePacked(_ans))) {
          return true;
@@ -81,8 +90,10 @@ contract Quiz {
       }
    }
 
+   // Requires that the account has paid the fee to attempt the quiz
    // Requires that the account has attempted the quiz
    function awardLottery(uint _quizId, address _winner) private {
+      require(quizzes[_quizId].hasPaid[msg.sender]);
       require(quizzes[_quizId].attempts[msg.sender]);
       _winner.transfer(quizzes[_quizId].pool);
    }
