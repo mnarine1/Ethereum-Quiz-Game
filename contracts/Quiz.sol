@@ -58,10 +58,9 @@ contract Quiz {
    // Requires that the account has not attempted the quiz before
    // The contract's account balance will hold all of the ether for all QuizEvent pools
    // Add fee to the pool of _quizId
-   function payToPlay (uint _quizId) payable {
+   function payToPlay (uint _quizId) public payable {
       require(_quizId > 0 && _quizId <= numQuizzes);
       require(!quizzes[_quizId].attempts[msg.sender]);
-      this.balance += msg.value;             // Do we need this ??? ---------------------------
       quizzes[_quizId].pool += msg.value;
    }
 
@@ -94,7 +93,7 @@ contract Quiz {
    // Requires that the account has attempted the quiz
    // Transfer the amount of ether in the pool of _quizId to the winner
    // Set the _quizId pool amount to 0
-   function awardLottery (uint _quizId, address _winner) private {
+   function awardLottery (uint _quizId, address payable _winner) private {
       require(quizzes[_quizId].hasPaid[msg.sender]);
       require(quizzes[_quizId].attempts[msg.sender]);
       _winner.transfer(quizzes[_quizId].pool);
