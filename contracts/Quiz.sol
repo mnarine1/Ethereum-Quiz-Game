@@ -19,8 +19,8 @@ contract Quiz {
       uint fee;
       uint pool;
       Question q1;
-      mapping(address => bool) hasPaid;
-      mapping(address => bool) attempts;
+      mapping(address => bool) hasPaid;   // Maybe change this to a dynamic array? ---------------
+      mapping(address => bool) attempts;  // Maybe change this to a dynamic array? ---------------
    }
 
    mapping(uint => QuizEvent) quizzes;
@@ -38,7 +38,7 @@ contract Quiz {
 
    // Increment number of quizzes
    // Create a new QuizEvent and add it to the list of quizzes
-   function makeQuiz (string memory _name, uint _fee, uint _pool, string memory _question, string memory _ans1, string memory _ans2, string memory _ans3, string memory _ans4) private {
+   function makeQuiz (string memory _name, uint _fee, uint _pool, string memory _question, string memory _ans1, string memory _ans2, string memory _ans3, string memory _ans4) public {
       numQuizzes ++;
       quizzes[numQuizzes] = QuizEvent(numQuizzes, _name, _fee, _pool, Question(_question, _ans1, _ans2, _ans3, _ans4));
    }
@@ -47,11 +47,12 @@ contract Quiz {
    // Requires that the account trying to access the quiz information has not taken it before
    // Once the account receives the quiz, add the account to the list of accounts that have
    // attempted this quiz
-   function getQuiz (uint _quizId) public {
+   function getQuiz (uint _quizId) view public returns (string memory, string memory, string memory, string memory, string memory) {
       require(_quizId > 0 && _quizId <= numQuizzes);
       require(!quizzes[_quizId].attempts[msg.sender]);
-      quizzes[_quizId].attempts[msg.sender] = true;
-      emit fetchquiz(_quizId);
+     // quizzes[_quizId].attempts[msg.sender] = true;
+      //emit fetchquiz(_quizId);
+      return (quizzes[_quizId].q1.question, quizzes[_quizId].q1.correctAns, quizzes[_quizId].q1.wrongAns1, quizzes[_quizId].q1.wrongAns2, quizzes[_quizId].q1.wrongAns3);
    }
 
    // Requires that the quiz exists
@@ -66,9 +67,13 @@ contract Quiz {
 
    // Requires that the quiz exists
    // Returns the current pool amount of the QuizEvent _quizId
-   function getPoolAmount (uint _quizId) public returns (uint) {
+   function getPoolAmount (uint _quizId) view public returns (uint) {
       require(_quizId > 0 && _quizId <= numQuizzes);
       return quizzes[_quizId].pool;
+   }
+
+   function getCorr(uint _quizId) view public returns (string memory) {
+       return quizzes[_quizId].q1.correctAns;
    }
 
    // Requires that the quiz event exists
@@ -77,16 +82,30 @@ contract Quiz {
    // Hashes the question's correct answer and the answer submitted by the account and compares
    // the two Hashes
    // If the two hashes are equal, then return true, otherwise false
-   function scoreAttempt (uint _quizId, string memory _ans) public returns (bool) {
+   function scoreAttempt (uint _quizId, string memory _ans) view public returns (string memory) {
       require(_quizId > 0 && _quizId <= numQuizzes);
       require(quizzes[_quizId].hasPaid[msg.sender]);
       require(quizzes[_quizId].attempts[msg.sender]);
 
-      if(keccak256(abi.encodePacked(quizzes[_quizId].q1.correctAns)) == keccak256(abi.encodePacked(_ans))) {
-         return true;
-      } else {
-         return false;
+      string memory temp = _ans;
+
+      return _ans;
+
+      if (bytes(temp).length == bytes(temp).length) {
+          //return "True";
       }
+
+      //return "False";
+
+      for (uint i = 0; i < bytes(temp).length; i++) {
+          if (bytes(temp)[i] != bytes(temp)[i]) {
+              //return false;
+          }
+      }
+      //return true;
+
+      //return (bytes(temp).length == bytes(temp).length);
+      //return (keccak256(abi.encodePacked(_ans)) == keccak256(abi.encodePacked(_ans)));
    }
 
    // Requires that the account has paid the fee to attempt the quiz
