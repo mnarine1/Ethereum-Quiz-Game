@@ -210,7 +210,7 @@ var QuizContract = web3.eth.contract([
     "outputs": [
       {
         "name": "",
-        "type": "string"
+        "type": "bool"
       }
     ],
     "payable": false,
@@ -219,13 +219,29 @@ var QuizContract = web3.eth.contract([
   }
 ]);
 
-$("#conn").click(function(){
-   var Quiz = QuizContract.at($("#conaddress").val());
-   console.log(Quiz);
+var Quiz;
+Quiz = QuizContract.at('0x34289fe09E772343d9A1ef3807E1D5a8bBD41228');
+console.log(Quiz);
+
+$("#addConn").click(function(){
+   $("#appendPoint").html('<div class="modal"><div class="panel"><h3>Connect to Contract</h3><form><input type="text" id="conaddress" placeholder="Contract Address"></form><button type="button" name="button" class="sub" id="conn">Connect</button></div></div>');
 });
 
-$("#makeQuiz").click(function() {
-   Quiz.makeQuiz($("#qName").val(),$("#qFee").val(),$("#qPool").val(),$("#qQuestion").val(),$("#qCorrect").val(),$("#qWrong1").val(),$("#qWrong2").val(),$("#qWrong3").val());
+$(".main").click(function(){$("#appendPoint").html("");});
+
+$(document).on("click", "#conn", function(){
+   if($("#conaddress").val() != "") {
+      Quiz = QuizContract.at($("#conaddress").val());
+      console.log(Quiz);
+      $(".main").css("height", "auto");
+      $("#appendPoint").html("");
+   } else {
+      $("#conaddress").css("background", "red");
+   }
+});
+
+$("#makeQuiz").click(function(){
+   Quiz.methods.makeQuiz($("#qName").val(),$("#qFee").val(),$("#qPool").val(),$("#qQuestion").val(),$("#qCorrect").val(),$("#qWrong1").val(),$("#qWrong2").val(),$("#qWrong3").val()).send({from: web3.eth.defaultAccount, gas: 3000000});
 
    Quiz.getQuiz(function(error, result){
       if(!error) {
@@ -234,4 +250,30 @@ $("#makeQuiz").click(function() {
          console.log(error);
       }
    });
+});
+
+$("#mq").click(function(){
+   $("#mq").css("flex", "10");
+   $("#tq").css("flex", "1");
+   $("#mqrot").css("transform", "translate(-50%, -50%) rotate(0deg)");
+   $("#tqrot").css("transform", "translate(-50%, -50%) rotate(90deg)");
+   $("#tqrot").css("width", "100vh");
+   $("#mqrot").css("width", "auto");
+   $("#mqfirst").css("margin-top", "-100vh");
+   $("#tqfirst").css("margin-top", "0");
+   $("#mq").removeClass("unselect");
+   $("#tq").addClass("unselect");
+});
+
+$("#tq").click(function(){
+   $("#tq").css("flex", "10");
+   $("#mq").css("flex", "1");
+   $("#tqrot").css("transform", "translate(-50%, -50%) rotate(0deg)");
+   $("#mqrot").css("transform", "translate(-50%, -50%) rotate(-90deg)");
+   $("#mqrot").css("width", "100vh");
+   $("#tqrot").css("width", "auto");
+   $("#tqfirst").css("margin-top", "-100vh");
+   $("#mqfirst").css("margin-top", "0");
+   $("#tq").removeClass("unselect");
+   $("#mq").addClass("unselect");
 });
