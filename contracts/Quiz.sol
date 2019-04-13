@@ -71,7 +71,7 @@ contract Quiz {
       require(!quizzes[_quizId].attempts[msg.sender]);
       userPay();
       quizzes[_quizId].pool += msg.value;
-      require(msg.value >= quizzes[_quizId].pool);
+      require(msg.value >= quizzes[_quizId].fee);
       emit fetchquiz(_quizId);
    }
 
