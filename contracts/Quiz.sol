@@ -96,30 +96,12 @@ contract Quiz {
    // Hashes the question's correct answer and the answer submitted by the account and compares
    // the two Hashes
    // If the two hashes are equal, then return true, otherwise false
-   function scoreAttempt (uint _quizId, string memory _ans) view public returns (string memory) {
+   function scoreAttempt (uint _quizId, string memory _ans) view public returns (bool) {
       require(_quizId > 0 && _quizId <= numQuizzes);
       require(quizzes[_quizId].hasPaid[msg.sender]);
       require(quizzes[_quizId].attempts[msg.sender]);
 
-      string memory temp = _ans;
-
-      return _ans;
-
-      if (bytes(temp).length == bytes(temp).length) {
-          //return "True";
-      }
-
-      //return "False";
-
-      for (uint i = 0; i < bytes(temp).length; i++) {
-          if (bytes(temp)[i] != bytes(temp)[i]) {
-              //return false;
-          }
-      }
-      //return true;
-
-      //return (bytes(temp).length == bytes(temp).length);
-      //return (keccak256(abi.encodePacked(_ans)) == keccak256(abi.encodePacked(_ans)));
+      return (keccak256(abi.encodePacked(_ans)) == keccak256(abi.encodePacked(quizzes[_quizId].q1.correctAns)));
    }
 
    // Requires that the account has paid the fee to attempt the quiz
