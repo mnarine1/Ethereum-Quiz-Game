@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+   <head>
+      <meta charset="utf-8">
+      <title></title>
+      <link rel="stylesheet" href="css/style.css">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" charset="utf-8"></script>
+      <script src="js/web3.min.js" charset="utf-8"></script>
+   </head>
+   <body>
+         <div class="title">
+            <div class="page" id="start">
+               <h1>Lottery</h1>
+            </div>
+         </div>
+
+      <div class="page">
+         <div class="container">
+            <div class="panel">
+               <h2>Connect to Contract</h2>
+               <form>
+                  <input type="text" id="conaddress" placeholder="Contract Address">
+               </form>
+               <button type="button" name="button"  class="sub" id="conn">Connect</button>
+            </div>
+         </div>
+      </div>
+
+      <div class="page">
+         <div class="container">
+            <div class="panel">
+               <h2>Make a Quiz</h2>
+               <form>
+                  <input type="text" id="qName" placeholder="Quiz Name">
+                  <input type="number" id="qFee" placeholder="Entrance Fee (ETH)">
+                  <input type="number" id="qPool" placeholder="Initial Pool (ETH)">
+                  <input type="text" id="qQuestion" placeholder="Question">
+                  <input type="text" id="qCorrect" placeholder="Correct Answer">
+                  <input type="text" id="qWrong1" placeholder="Wrong Answer">
+                  <input type="text" id="qWrong2" placeholder="Wrong Answer">
+                  <input type="text" id="qWrong3" placeholder="Wrong Answer">
+               </form>
+               <button type="button" name="button" class="sub" id="makeQuiz">Make Quiz</button>
+            </div>
+            <span id="result"></span>
+         </div>
+      </div>
+   <script src="js/script.js" charset="utf-8"></script>
+   </body>
+</html>
