@@ -19,10 +19,10 @@ contract Quiz {
       uint fee;
       uint pool;
       Question q1;
-      mapping(address => bool) hasPaid;   // Maybe change this to a dynamic array? ---------------
-      mapping(address => bool) attempts;  // Maybe change this to a dynamic array? ---------------
-     
-       
+      mapping(address => bool) hasPaid;
+      mapping(address => bool) attempts;
+
+
    }
 
    mapping(uint => QuizEvent) quizzes;
@@ -36,7 +36,7 @@ contract Quiz {
    constructor () public {
       numQuizzes = 0;
       makeQuiz("Test Quiz 1", 1, 10, "2+2=", "4", "3", "5", "2");
-      
+
    }
 
    // Increment number of quizzes
@@ -44,6 +44,7 @@ contract Quiz {
    function makeQuiz (string memory _name, uint _fee, uint _pool, string memory _question, string memory _ans1, string memory _ans2, string memory _ans3, string memory _ans4) public {
       numQuizzes ++;
       quizzes[numQuizzes] = QuizEvent(numQuizzes, _name, _fee, _pool, Question(_question, _ans1, _ans2, _ans3, _ans4));
+      quizzes[numQuizzes].attempts[msg.sender] = true;
    }
 
    // Requires that the quiz event exists
@@ -131,15 +132,15 @@ contract Quiz {
       _winner.transfer(quizzes[_quizId].pool);
       quizzes[_quizId].pool = 0;
    }
-   
+
    function ifPlayed(uint _quizId)view private returns (string memory, string memory, string memory, string memory, string memory){
     require(!quizzes[_quizId].attempts[msg.sender]); //requires that this is the user's first attempt
     require(quizzes[_quizId].hasPaid[msg.sender]);
     getQuiz(_quizId);
-       
+
    }
    //Allows user to send money to our account
    function userPay()payable public{
-       pay[msg.sender] = msg.value; 
+       pay[msg.sender] = msg.value;
    }
 }
