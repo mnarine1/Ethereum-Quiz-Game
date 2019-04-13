@@ -65,6 +65,10 @@ contract Quiz {
       quizzes[_quizId].pool += msg.value;
    }
 
+   function getNum() public view returns (uint) {
+       return numQuizzes;
+   }
+
    // Requires that the quiz exists
    // Returns the current pool amount of the QuizEvent _quizId
    function getPoolAmount (uint _quizId) view public returns (uint) {
