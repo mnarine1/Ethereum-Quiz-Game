@@ -1,7 +1,7 @@
 pragma solidity ^0.5.0;
 
 contract Quiz {
-
+ mapping(address => uint) pay;
    // Structure of a Question
    // Each Question has four answer choices and only one correct anser choice
    struct Question {
@@ -21,7 +21,7 @@ contract Quiz {
       Question q1;
       mapping(address => bool) hasPaid;   // Maybe change this to a dynamic array? ---------------
       mapping(address => bool) attempts;  // Maybe change this to a dynamic array? ---------------
-      
+     
        
    }
 
@@ -36,6 +36,7 @@ contract Quiz {
    constructor () public {
       numQuizzes = 0;
       makeQuiz("Test Quiz 1", 1, 10, "2+2=", "4", "3", "5", "2");
+      
    }
 
    // Increment number of quizzes
@@ -59,13 +60,15 @@ contract Quiz {
 
    // Requires that the quiz exists
    // Requires that the account has not attempted the quiz before
+   // Allows users to send money
    // The contract's account balance will hold all of the ether for all QuizEvent pools
    // Add fee to the pool of _quizId
    //Require that amount paid is greater than equal to current amount in Pool
-   //Fetch the quiz for the user to access. 
+   //Fetch the quiz for the user to access.
    function payToPlay (uint _quizId) public payable {
       require(_quizId > 0 && _quizId <= numQuizzes);
       require(!quizzes[_quizId].attempts[msg.sender]);
+      userPay();
       quizzes[_quizId].pool += msg.value;
       require(msg.value >= quizzes[_quizId].pool);
       emit fetchquiz(_quizId);
@@ -134,5 +137,9 @@ contract Quiz {
     require(quizzes[_quizId].hasPaid[msg.sender]);
     getQuiz(_quizId);
        
+   }
+   //Allows user to send money to our account
+   function userPay()payable public{
+       pay[msg.sender] = msg.value; 
    }
 }
