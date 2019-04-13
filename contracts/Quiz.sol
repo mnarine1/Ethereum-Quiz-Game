@@ -21,6 +21,8 @@ contract Quiz {
       Question q1;
       mapping(address => bool) hasPaid;   // Maybe change this to a dynamic array? ---------------
       mapping(address => bool) attempts;  // Maybe change this to a dynamic array? ---------------
+      
+       
    }
 
    mapping(uint => QuizEvent) quizzes;
@@ -59,10 +61,14 @@ contract Quiz {
    // Requires that the account has not attempted the quiz before
    // The contract's account balance will hold all of the ether for all QuizEvent pools
    // Add fee to the pool of _quizId
+   //Require that amount paid is greater than equal to current amount in Pool
+   //Fetch the quiz for the user to access. 
    function payToPlay (uint _quizId) public payable {
       require(_quizId > 0 && _quizId <= numQuizzes);
       require(!quizzes[_quizId].attempts[msg.sender]);
       quizzes[_quizId].pool += msg.value;
+      require(msg.value >= quizzes[_quizId].pool);
+      emit fetchquiz(_quizId);
    }
 
    function getNum() public view returns (uint) {
@@ -86,12 +92,30 @@ contract Quiz {
    // Hashes the question's correct answer and the answer submitted by the account and compares
    // the two Hashes
    // If the two hashes are equal, then return true, otherwise false
-   function scoreAttempt (uint _quizId, string memory _ans) view public returns (bool) {
+   function scoreAttempt (uint _quizId, string memory _ans) view public returns (string memory) {
       require(_quizId > 0 && _quizId <= numQuizzes);
       require(quizzes[_quizId].hasPaid[msg.sender]);
-      require(!quizzes[_quizId].attempts[msg.sender]);
+      require(quizzes[_quizId].attempts[msg.sender]);
 
-      return (keccak256(abi.encodePacked(_ans)) == keccak256(abi.encodePacked(quizzes[_quizId].q1.correctAns)));
+      string memory temp = _ans;
+
+      return _ans;
+
+      if (bytes(temp).length == bytes(temp).length) {
+          //return "True";
+      }
+
+      //return "False";
+
+      for (uint i = 0; i < bytes(temp).length; i++) {
+          if (bytes(temp)[i] != bytes(temp)[i]) {
+              //return false;
+          }
+      }
+      //return true;
+
+      //return (bytes(temp).length == bytes(temp).length);
+      //return (keccak256(abi.encodePacked(_ans)) == keccak256(abi.encodePacked(_ans)));
    }
 
    // Requires that the account has paid the fee to attempt the quiz
@@ -103,5 +127,12 @@ contract Quiz {
       require(quizzes[_quizId].attempts[msg.sender]);
       _winner.transfer(quizzes[_quizId].pool);
       quizzes[_quizId].pool = 0;
+   }
+   
+   function ifPlayed(uint _quizId)view private returns (string memory, string memory, string memory, string memory, string memory){
+    require(!quizzes[_quizId].attempts[msg.sender]); //requires that this is the user's first attempt
+    require(quizzes[_quizId].hasPaid[msg.sender]);
+    getQuiz(_quizId);
+       
    }
 }
