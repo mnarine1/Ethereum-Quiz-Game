@@ -173,3 +173,9 @@ h3 {
 .section {
    transition: all 500ms ease-in-out;
 }
+
+#numQ {
+   text-align: center;
+   font-size: 20px;
+   font-family: Arial, sans-serif;
+}

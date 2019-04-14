@@ -216,11 +216,20 @@ var QuizContract = web3.eth.contract([
     "payable": false,
     "stateMutability": "view",
     "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "userPay",
+    "outputs": [],
+    "payable": true,
+    "stateMutability": "payable",
+    "type": "function"
   }
 ]);
 
 var Quiz;
-Quiz = QuizContract.at('0x34289fe09E772343d9A1ef3807E1D5a8bBD41228');
+Quiz = QuizContract.at('0x735fd25631f55e7061D53cCb5CB3361FD7A2588f');
 console.log(Quiz);
 
 $("#addConn").click(function(){
@@ -276,4 +285,9 @@ $("#tq").click(function(){
    $("#mqfirst").css("margin-top", "0");
    $("#tq").removeClass("unselect");
    $("#mq").addClass("unselect");
+   var num = Quiz.getNum();
+   console.log(num);
+   $("#numQ").html('<p>Number of Quizzes: '+num.c[0]+'</p>');
+   var q = Quiz.getQuiz(1);
+   console.log(q);
 });

@@ -56,7 +56,8 @@ contract Quiz {
       require(!quizzes[_quizId].attempts[msg.sender]);
      // quizzes[_quizId].attempts[msg.sender] = true;
       //emit fetchquiz(_quizId);
-      return (quizzes[_quizId].q1.question, quizzes[_quizId].q1.correctAns, quizzes[_quizId].q1.wrongAns1, quizzes[_quizId].q1.wrongAns2, quizzes[_quizId].q1.wrongAns3);
+      Question memory q = quizzes[_quizId].q1;
+      return (q.question, q.correctAns, q.wrongAns1, q.wrongAns2, q.wrongAns3);
    }
 
    // Requires that the quiz exists
