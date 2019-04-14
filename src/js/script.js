@@ -131,6 +131,41 @@ var QuizContract = web3.eth.contract([
     "signature": "0x60907be8"
   },
   {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_quizId",
+        "type": "uint256"
+      }
+    ],
+    "name": "setAttempt",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0xa0558879"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_quizId",
+        "type": "uint256"
+      }
+    ],
+    "name": "canSkip",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "signature": "0xe04d5a8d"
+  },
+  {
     "constant": true,
     "inputs": [
       {
@@ -259,21 +294,11 @@ var QuizContract = web3.eth.contract([
     "stateMutability": "view",
     "type": "function",
     "signature": "0x888c9663"
-  },
-  {
-    "constant": false,
-    "inputs": [],
-    "name": "userPay",
-    "outputs": [],
-    "payable": true,
-    "stateMutability": "payable",
-    "type": "function",
-    "signature": "0x75f3349d"
   }
 ]);
 
 var Quiz;
-Quiz = QuizContract.at('0x10c194A3708d8e6227FB9039A97DFAe630B080C5');
+Quiz = QuizContract.at('0x6d23393DEf9CF886F324b97be753f84F57C2C646');
 console.log(Quiz);
 
 $("#addConn").click(function(){
@@ -352,7 +377,7 @@ $("#tq").click(function(){
       var q;
       for(var i = 1; i <= num.c[0] && i <= 3; i++) {
          q = Quiz.getQuizDisp(i);
-         $("#quizLoad").append('<div class="quizCard"><input type="hidden" value="'+q[0]+'"><p>#'+q[0]+': '+q[1]+'</p><p>Fee: '+q[2]+'</p><p> Current Pool: '+q[3]+'</p></div>');
+         $("#quizLoad").append('<div class="quizCard"><input type="hidden" value="'+q[0]+'" id="getqid"><input type="hidden" value="'+q[2]+'" id="getfee"><p>#'+q[0]+': '+q[1]+'</p><p>Fee: '+q[2]+'</p><p> Current Pool: '+q[3]+'</p></div>');
          console.log(q);
       }
    }
@@ -360,15 +385,56 @@ $("#tq").click(function(){
 });
 
 var qid;
+var fee;
 $(document).on("click", ".quizCard", function(){
    $("#tqfirst").css("margin-top", "-200vh");
    $("#tqsecond").css("margin-top", "-100vh");
-   qid = $(this).children("input").val();
+   qid = $(this).children("#getqid").val();
    console.log(qid);
+
+   fee = $(this).children("#getfee").val();
+   $("#loadFee").html('<h3>Pay the Fee? ('+fee+' ETH)</h3><div class="yn"><button type="button" id="choiceyes">YES</button><button type="button" id="choiceno">NO</button></div>')
+   var alreadyPaid = Quiz.canSkip(qid);
+   console.log(alreadyPaid);
+   if(alreadyPaid) {
+      $(".moveon").html('<ion-icon name="arrow-down" id="alreadyPaid"></ion-icon>');
+   } else {
+      $(".moveon").html("");
+   }
+});
+
+$(document).on("click", "#alreadyPaid", function(){
+   var question = Quiz.getQuiz(qid);
+   console.log(question);
+   Quiz.setAttempt(qid);
+   $(".moveon").html("");
+   $("#loadQ").html('<h4 id="quizques">'+question[0]+'</h4><div class="choices"><div class="anschoice" id="a1">'+question[1]+'</div><div class="anschoice" id="a2">'+question[2]+'</div><div class="anschoice" id="a3">'+question[3]+'</div><div class="anschoice" id="a4">'+question[4]+'</div></div><button type="button" id="subQuiz" disabled>Submit Quiz</button>');
+   $("#tqfirst").css("margin-top", "-300vh");
+   $("#tqsecond").css("margin-top", "-200vh");
+   $("#tqthird").css("margin-top", "-100vh");
+});
+
+$(document).on("click", "#choiceyes", function(){
+   //var feewei = fee * 1000000000000000000;
+   Quiz.payToPlay(qid).send({from: web3.eth.defaultAccount, gas: 3000000, value: web3.utils.towei(fee, 'ether')}, function(error,result){
+      if(!error) {
+         console.log("Success");
+      } else {
+         console.log(error);
+      }
+   });
 
    var question = Quiz.getQuiz(qid);
    console.log(question);
    $("#loadQ").html('<h4 id="quizques">'+question[0]+'</h4><div class="choices"><div class="anschoice" id="a1">'+question[1]+'</div><div class="anschoice" id="a2">'+question[2]+'</div><div class="anschoice" id="a3">'+question[3]+'</div><div class="anschoice" id="a4">'+question[4]+'</div></div><button type="button" id="subQuiz" disabled>Submit Quiz</button>');
+   $("#tqfirst").css("margin-top", "-300vh");
+   $("#tqsecond").css("margin-top", "-200vh");
+   $("#tqthird").css("margin-top", "-100vh");
+});
+
+$(document).on("click", "#choiceno", function(){
+   $("#tqfirst").css("margin-top", "-100vh");
+   $("#tqsecond").css("margin-top", "0vh");
 });
 
 $(document).on("click", ".anschoice", function(){
@@ -380,8 +446,9 @@ $(document).on("click", ".anschoice", function(){
 $(document).on("click", "#subQuiz", function(){
    var choice = $(".picked").text();
    var score = Quiz.scoreAttempt(qid, choice);
-   $("#tqfirst").css("margin-top", "-300vh");
-   $("#tqsecond").css("margin-top", "-200vh");
-   $("#tqthird").css("margin-top", "-100vh");
+   $("#tqfirst").css("margin-top", "-400vh");
+   $("#tqsecond").css("margin-top", "-300vh");
+   $("#tqthird").css("margin-top", "-200vh");
+   $("#tqfourth").css("margin-top", "-100vh");
    $("#score").html(score);
 });

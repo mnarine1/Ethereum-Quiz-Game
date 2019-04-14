@@ -1,7 +1,6 @@
 pragma solidity ^0.5.0;
 
 contract Quiz {
- mapping(address => uint) pay;
    // Structure of a Question
    // Each Question has four answer choices and only one correct anser choice
    struct Question {
@@ -60,6 +59,15 @@ contract Quiz {
       return (temp.id,temp.name,temp.fee,temp.pool);
    }
 
+    function setAttempt(uint _quizId) public {
+        quizzes[_quizId].attempts[msg.sender] = true;
+    }
+
+    function canSkip(uint _quizId) view public returns (bool) {
+        bool skip = quizzes[_quizId].hasPaid[msg.sender] && !quizzes[_quizId].attempts[msg.sender];
+        return skip;
+    }
+
    // Requires that the quiz event exists
    // Requires that the account trying to access the quiz information has not taken it before
    // Once the account receives the quiz, add the account to the list of accounts that have
@@ -67,8 +75,6 @@ contract Quiz {
    function getQuiz (uint _quizId) view public returns (string memory, string memory, string memory, string memory, string memory) {
       require(_quizId > 0 && _quizId <= numQuizzes);
       require(!quizzes[_quizId].attempts[msg.sender]);
-      //quizzes[_quizId].attempts[msg.sender] = true;
-      //emit fetchquiz(_quizId);
       Question memory q = quizzes[_quizId].q1;
       return (q.question, q.correctAns, q.wrongAns1, q.wrongAns2, q.wrongAns3);
    }
@@ -84,8 +90,8 @@ contract Quiz {
       require(_quizId > 0 && _quizId <= numQuizzes);
       require(!quizzes[_quizId].attempts[msg.sender]);
       require(msg.value >= quizzes[_quizId].fee);
-      userPay();
       quizzes[_quizId].pool += msg.value;
+      quizzes[_quizId].hasPaid[msg.sender] = true;
       emit fetchquiz(_quizId);
    }
 
@@ -127,16 +133,5 @@ contract Quiz {
       require(quizzes[_quizId].attempts[msg.sender]);
       _winner.transfer(quizzes[_quizId].pool);
       quizzes[_quizId].pool = 0;
-   }
-
-   function ifPlayed(uint _quizId)view private returns (string memory, string memory, string memory, string memory, string memory){
-    require(!quizzes[_quizId].attempts[msg.sender]); //requires that this is the user's first attempt
-    require(quizzes[_quizId].hasPaid[msg.sender]);
-    getQuiz(_quizId);
-
-   }
-   //Allows user to send money to our account
-   function userPay()payable public{
-       pay[msg.sender] = msg.value;
    }
 }

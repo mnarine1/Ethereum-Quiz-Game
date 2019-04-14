@@ -248,3 +248,34 @@ h4 {
    transform: translate(-50%);
    cursor: pointer;
 }
+
+.yn {
+   position: relative;
+   top: 30px;
+   left: 50%;
+   transform: translate(-50%);
+   margin-bottom: 40px;
+   display: inline-block;
+}
+
+.yn button {
+   border: none;
+   padding: 10px 20px;
+   color: #FFF;
+   margin: 0 10px;
+   cursor: pointer;
+}
+
+#choiceyes {background: #31D837;}
+#choiceno {background: #F44242;}
+
+.moveon {
+   position: absolute;
+   bottom: 60px;
+   right: 60px;
+}
+
+#alreadyPaid {
+   font-size: 40px;
+   color: #FFF;
+}
