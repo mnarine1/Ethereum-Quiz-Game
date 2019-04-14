@@ -19,13 +19,15 @@ var QuizContract = web3.eth.contract([
     ],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x9a8fc0b8"
   },
   {
     "inputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "constructor"
+    "type": "constructor",
+    "signature": "constructor"
   },
   {
     "anonymous": false,
@@ -37,7 +39,8 @@ var QuizContract = web3.eth.contract([
       }
     ],
     "name": "fetchquiz",
-    "type": "event"
+    "type": "event",
+    "signature": "0x74b91515a354f13aa884eed46cea33aa37533250f496f869b474fb7449099a2b"
   },
   {
     "anonymous": false,
@@ -49,7 +52,8 @@ var QuizContract = web3.eth.contract([
       }
     ],
     "name": "quiztaken",
-    "type": "event"
+    "type": "event",
+    "signature": "0xe47940e15c49852a5ea2c5fbe9b1507d39b06a6504f4c2404f6e131ec222af0a"
   },
   {
     "constant": false,
@@ -91,7 +95,8 @@ var QuizContract = web3.eth.contract([
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0x0276266e"
   },
   {
     "constant": true,
@@ -122,7 +127,8 @@ var QuizContract = web3.eth.contract([
     ],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x60907be8"
   },
   {
     "constant": true,
@@ -157,7 +163,8 @@ var QuizContract = web3.eth.contract([
     ],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0xa3f7e096"
   },
   {
     "constant": false,
@@ -171,7 +178,8 @@ var QuizContract = web3.eth.contract([
     "outputs": [],
     "payable": true,
     "stateMutability": "payable",
-    "type": "function"
+    "type": "function",
+    "signature": "0x7b82578f"
   },
   {
     "constant": true,
@@ -185,7 +193,8 @@ var QuizContract = web3.eth.contract([
     ],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x67e0badb"
   },
   {
     "constant": true,
@@ -204,7 +213,8 @@ var QuizContract = web3.eth.contract([
     ],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x41af4858"
   },
   {
     "constant": true,
@@ -223,7 +233,8 @@ var QuizContract = web3.eth.contract([
     ],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x99eb6950"
   },
   {
     "constant": true,
@@ -246,7 +257,8 @@ var QuizContract = web3.eth.contract([
     ],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x888c9663"
   },
   {
     "constant": false,
@@ -255,12 +267,13 @@ var QuizContract = web3.eth.contract([
     "outputs": [],
     "payable": true,
     "stateMutability": "payable",
-    "type": "function"
+    "type": "function",
+    "signature": "0x75f3349d"
   }
 ]);
 
 var Quiz;
-Quiz = QuizContract.at('0x96494492BA3561DA8C3698a64a43a237552A864a');
+Quiz = QuizContract.at('0x10c194A3708d8e6227FB9039A97DFAe630B080C5');
 console.log(Quiz);
 
 $("#addConn").click(function(){
@@ -268,7 +281,7 @@ $("#addConn").click(function(){
 });
 
 $("#acc").click(function(){
-   $("#appendPoint").html('<div class="modal"><div class="panel"><h3>Connect to Address</h3><form><input type="text" id="accaddress" placeholder="Account Address"></form><button type="button" name="button" class="sub" id="connacc">Connect</button></div></div>');
+   $("#appendPoint").html('<div class="modal"><div class="panel"><h3>Connect to Address</h3><p id="centeracc">Current: '+ web3.eth.defaultAccount +'</p><form><input type="text" id="accaddress" placeholder="Account Address"></form><button type="button" name="button" class="sub" id="connacc">Connect</button></div></div>');
 });
 
 $(".main").click(function(){$("#appendPoint").html("");});
@@ -295,7 +308,7 @@ $(document).on("click", "#connacc", function(){
 });
 
 $("#makeQuiz").click(function(){
-   Quiz.methods.makeQuiz($("#qName").val(),$("#qFee").val(),$("#qPool").val(),$("#qQuestion").val(),$("#qCorrect").val(),$("#qWrong1").val(),$("#qWrong2").val(),$("#qWrong3").val()).send({from: web3.eth.defaultAccount, gas: 3000000});
+   Quiz.makeQuiz($("#qName").val(),$("#qFee").val(),$("#qPool").val(),$("#qQuestion").val(),$("#qCorrect").val(),$("#qWrong1").val(),$("#qWrong2").val(),$("#qWrong3").val());
 
    Quiz.getQuizDsp(function(error, result){
       if(!error) {
@@ -317,6 +330,7 @@ $("#mq").click(function(){
    $("#tqfirst").css("margin-top", "0");
    $("#mq").removeClass("unselect");
    $("#tq").addClass("unselect");
+   $("#tq").removeClass("open");
 });
 
 $("#tq").click(function(){
@@ -330,15 +344,44 @@ $("#tq").click(function(){
    $("#mqfirst").css("margin-top", "0");
    $("#tq").removeClass("unselect");
    $("#mq").addClass("unselect");
-   var num = Quiz.getNum();
-   console.log(num);
-   $("#quizLoad").html('<h2>Quizzes</h2><span id="numQ"></p></span>');
-   $("#numQ").html('<p>Number of Quizzes: '+num.c[0]+'</p>');
-   var q;
-   for(var i = 1; i <= num.c[0] && i <= 3; i++) {
-      q = Quiz.getQuizDisp(i);
-      $("#quizLoad").append('<div class="quizCard"><p>#'+q[0]+': '+q[1]+'</p><p>Fee: '+q[2]+'</p><p> Current Pool: '+q[3]+'</p></div>');
+   if(!$("#tq").hasClass("open")) {
+      var num = Quiz.getNum();
+      console.log(num);
+      $("#quizLoad").html('<h2>Quizzes</h2><span id="numQ"></p></span>');
+      $("#numQ").html('<p>Number of Quizzes: '+num.c[0]+'</p>');
+      var q;
+      for(var i = 1; i <= num.c[0] && i <= 3; i++) {
+         q = Quiz.getQuizDisp(i);
+         $("#quizLoad").append('<div class="quizCard"><input type="hidden" value="'+q[0]+'"><p>#'+q[0]+': '+q[1]+'</p><p>Fee: '+q[2]+'</p><p> Current Pool: '+q[3]+'</p></div>');
+         console.log(q);
+      }
    }
+   $("#tq").addClass("open");
+});
 
-   console.log(q);
+var qid;
+$(document).on("click", ".quizCard", function(){
+   $("#tqfirst").css("margin-top", "-200vh");
+   $("#tqsecond").css("margin-top", "-100vh");
+   qid = $(this).children("input").val();
+   console.log(qid);
+
+   var question = Quiz.getQuiz(qid);
+   console.log(question);
+   $("#loadQ").html('<h4 id="quizques">'+question[0]+'</h4><div class="choices"><div class="anschoice" id="a1">'+question[1]+'</div><div class="anschoice" id="a2">'+question[2]+'</div><div class="anschoice" id="a3">'+question[3]+'</div><div class="anschoice" id="a4">'+question[4]+'</div></div><button type="button" id="subQuiz" disabled>Submit Quiz</button>');
+});
+
+$(document).on("click", ".anschoice", function(){
+   $(".anschoice").removeClass("picked");
+   $(this).addClass("picked");
+   $("#subQuiz").prop("disabled", false);
+});
+
+$(document).on("click", "#subQuiz", function(){
+   var choice = $(".picked").text();
+   var score = Quiz.scoreAttempt(qid, choice);
+   $("#tqfirst").css("margin-top", "-300vh");
+   $("#tqsecond").css("margin-top", "-200vh");
+   $("#tqthird").css("margin-top", "-100vh");
+   $("#score").html(score);
 });

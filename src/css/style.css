@@ -1,6 +1,5 @@
 :root {
    --main-col: #F44242;
-   --acc-col: #000;
 }
 
 body {
@@ -50,6 +49,11 @@ ion-icon {
    display: inline-block;
 }
 
+#centeracc {
+   text-align: center;
+   font-family: Arial, sans-serif;
+}
+
 .main {
    position: absolute;
    top: 0;
@@ -92,6 +96,12 @@ h3 {
    font-family: Arial, sans-serif;
    color: #888;
    text-transform: uppercase;
+}
+
+h4 {
+   font-size: 20px;
+   font-family: Arial, sans-serif;
+   color: #444;
 }
 
 .container {
@@ -192,6 +202,7 @@ h3 {
    float: left;
    clear: both;
    margin-top: 5px;
+   cursor: pointer;
 }
 
 .quizCard p:first-child {
@@ -205,4 +216,35 @@ h3 {
    font-size: 20px;
    font-family: Arial, sans-serif;
    color: #000;
+}
+
+.choices {
+   width: calc(100% - 20px);
+   padding: 10px;
+   background: #CCC;
+}
+
+.anschoice {
+   width: calc(100% - 40px);
+   padding: 20px;
+   background: #888;
+   margin-top: 5px;
+   cursor: pointer;
+   font-family: Arial, sans-serif;
+   color: #FFF;
+}
+
+.picked {
+   background: var(--main-col);
+}
+
+#subQuiz {
+   border: none;
+   background: var(--main-col);
+   padding: 10px 20px;
+   position: relative;
+   top: 10px;
+   left: 50%;
+   transform: translate(-50%);
+   cursor: pointer;
 }

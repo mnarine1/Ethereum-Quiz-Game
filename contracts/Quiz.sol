@@ -83,9 +83,9 @@ contract Quiz {
    function payToPlay (uint _quizId) public payable {
       require(_quizId > 0 && _quizId <= numQuizzes);
       require(!quizzes[_quizId].attempts[msg.sender]);
+      require(msg.value >= quizzes[_quizId].fee);
       userPay();
       quizzes[_quizId].pool += msg.value;
-      require(msg.value >= quizzes[_quizId].fee);
       emit fetchquiz(_quizId);
    }
 
