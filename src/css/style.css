@@ -29,7 +29,12 @@ body {
    top: 50%;
    right: 60px;
    transform: translate(0, -50%);
+}
+
+ion-icon {
    cursor: pointer;
+   float: left;
+   margin: 0 30px:
 }
 
 #appendPoint {
@@ -178,4 +183,26 @@ h3 {
    text-align: center;
    font-size: 20px;
    font-family: Arial, sans-serif;
+}
+
+.quizCard {
+   width: calc(100% - 20px);
+   padding: 10px;
+   background: #CCC;
+   float: left;
+   clear: both;
+   margin-top: 5px;
+}
+
+.quizCard p:first-child {
+   font-size: 25px;
+   font-family: Arial, sans-serif;
+   font-weight: bold;
+   color: #333;
+}
+
+.quizCard p:not(:first-child) {
+   font-size: 20px;
+   font-family: Arial, sans-serif;
+   color: #000;
 }

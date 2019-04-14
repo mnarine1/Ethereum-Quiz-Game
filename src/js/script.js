@@ -101,6 +101,37 @@ var QuizContract = web3.eth.contract([
         "type": "uint256"
       }
     ],
+    "name": "getQuizDisp",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "name": "",
+        "type": "string"
+      },
+      {
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_quizId",
+        "type": "uint256"
+      }
+    ],
     "name": "getQuiz",
     "outputs": [
       {
@@ -229,11 +260,15 @@ var QuizContract = web3.eth.contract([
 ]);
 
 var Quiz;
-Quiz = QuizContract.at('0x735fd25631f55e7061D53cCb5CB3361FD7A2588f');
+Quiz = QuizContract.at('0x96494492BA3561DA8C3698a64a43a237552A864a');
 console.log(Quiz);
 
 $("#addConn").click(function(){
    $("#appendPoint").html('<div class="modal"><div class="panel"><h3>Connect to Contract</h3><form><input type="text" id="conaddress" placeholder="Contract Address"></form><button type="button" name="button" class="sub" id="conn">Connect</button></div></div>');
+});
+
+$("#acc").click(function(){
+   $("#appendPoint").html('<div class="modal"><div class="panel"><h3>Connect to Address</h3><form><input type="text" id="accaddress" placeholder="Account Address"></form><button type="button" name="button" class="sub" id="connacc">Connect</button></div></div>');
 });
 
 $(".main").click(function(){$("#appendPoint").html("");});
@@ -249,16 +284,26 @@ $(document).on("click", "#conn", function(){
    }
 });
 
+$(document).on("click", "#connacc", function(){
+   if($("#accaddress").val() != "") {
+      web3.eth.defaultAccount = $("#accaddress").val();
+      console.log("Account changed to: "+web3.eth.defaultAccount);
+      $("#appendPoint").html("");
+   } else {
+      $("#accaddress").css("background", "red");
+   }
+});
+
 $("#makeQuiz").click(function(){
    Quiz.methods.makeQuiz($("#qName").val(),$("#qFee").val(),$("#qPool").val(),$("#qQuestion").val(),$("#qCorrect").val(),$("#qWrong1").val(),$("#qWrong2").val(),$("#qWrong3").val()).send({from: web3.eth.defaultAccount, gas: 3000000});
 
-   Quiz.getQuiz(function(error, result){
+   Quiz.getQuizDsp(function(error, result){
       if(!error) {
          $("#result").html(result);
       } else {
          console.log(error);
       }
-   });
+   }, 1);
 });
 
 $("#mq").click(function(){
@@ -287,7 +332,13 @@ $("#tq").click(function(){
    $("#mq").addClass("unselect");
    var num = Quiz.getNum();
    console.log(num);
+   $("#quizLoad").html('<h2>Quizzes</h2><span id="numQ"></p></span>');
    $("#numQ").html('<p>Number of Quizzes: '+num.c[0]+'</p>');
-   var q = Quiz.getQuiz(1);
+   var q;
+   for(var i = 1; i <= num.c[0] && i <= 3; i++) {
+      q = Quiz.getQuizDisp(i);
+      $("#quizLoad").append('<div class="quizCard"><p>#'+q[0]+': '+q[1]+'</p><p>Fee: '+q[2]+'</p><p> Current Pool: '+q[3]+'</p></div>');
+   }
+
    console.log(q);
 });

@@ -21,11 +21,18 @@ contract Quiz {
       Question q1;
       mapping(address => bool) hasPaid;
       mapping(address => bool) attempts;
+   }
 
-
+   struct QuizDisplayable {
+      uint id;
+      string name;
+      uint fee;
+      uint pool;
+      mapping(address => bool) attempts;
    }
 
    mapping(uint => QuizEvent) quizzes;
+   mapping(uint => QuizDisplayable) quizDisp;
 
    uint public numQuizzes;
 
@@ -44,7 +51,13 @@ contract Quiz {
    function makeQuiz (string memory _name, uint _fee, uint _pool, string memory _question, string memory _ans1, string memory _ans2, string memory _ans3, string memory _ans4) public {
       numQuizzes ++;
       quizzes[numQuizzes] = QuizEvent(numQuizzes, _name, _fee, _pool, Question(_question, _ans1, _ans2, _ans3, _ans4));
+      quizDisp[numQuizzes] = QuizDisplayable(numQuizzes, _name, _fee, _pool);
       quizzes[numQuizzes].attempts[msg.sender] = true;
+   }
+
+   function getQuizDisp(uint _quizId) view public returns(uint, string memory, uint, uint) {
+      QuizDisplayable memory temp = quizDisp[_quizId];
+      return (temp.id,temp.name,temp.fee,temp.pool);
    }
 
    // Requires that the quiz event exists
@@ -54,7 +67,7 @@ contract Quiz {
    function getQuiz (uint _quizId) view public returns (string memory, string memory, string memory, string memory, string memory) {
       require(_quizId > 0 && _quizId <= numQuizzes);
       require(!quizzes[_quizId].attempts[msg.sender]);
-     // quizzes[_quizId].attempts[msg.sender] = true;
+      //quizzes[_quizId].attempts[msg.sender] = true;
       //emit fetchquiz(_quizId);
       Question memory q = quizzes[_quizId].q1;
       return (q.question, q.correctAns, q.wrongAns1, q.wrongAns2, q.wrongAns3);
