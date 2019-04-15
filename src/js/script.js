@@ -257,26 +257,6 @@ var QuizContract = web3.eth.contract([
       {
         "name": "_quizId",
         "type": "uint256"
-      }
-    ],
-    "name": "getCorr",
-    "outputs": [
-      {
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function",
-    "signature": "0x99eb6950"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "name": "_quizId",
-        "type": "uint256"
       },
       {
         "name": "_ans",
@@ -317,7 +297,7 @@ var QuizContract = web3.eth.contract([
 ]);
 
 var Quiz;
-Quiz = QuizContract.at('0x8633417873C328A00F303083F4E6100110D5D2bA');
+Quiz = QuizContract.at('0xaD1E17Aefad79A2Eee004768519Ef39F74298800');
 console.log(Quiz);
 
 $("#addConn").click(function(){

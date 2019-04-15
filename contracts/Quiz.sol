@@ -22,6 +22,8 @@ contract Quiz {
       mapping(address => bool) attempts;
    }
 
+   // Structure of a displayable quizzes
+   // Stores the same information as a quiz except for question information
    struct QuizDisplayable {
       uint id;
       string name;
@@ -42,11 +44,12 @@ contract Quiz {
    constructor () public {
       numQuizzes = 0;
       makeQuiz("Test Quiz 1", 1, 10, "2+2=", "4", "3", "5", "2");
-
    }
 
    // Increment number of quizzes
    // Create a new QuizEvent and add it to the list of quizzes
+   // Create a new QuizDisplayable and add it to the list of displayable quizzes
+   // Add the creator as a user who has attempted so the creator cannot attempt the quiz
    function makeQuiz (string memory _name, uint _fee, uint _pool, string memory _question, string memory _ans1, string memory _ans2, string memory _ans3, string memory _ans4) public {
       numQuizzes ++;
       quizzes[numQuizzes] = QuizEvent(numQuizzes, _name, _fee, _pool, Question(_question, _ans1, _ans2, _ans3, _ans4));
@@ -54,24 +57,27 @@ contract Quiz {
       quizzes[numQuizzes].attempts[msg.sender] = true;
    }
 
+   // Returns quiz information for _quizId without returning the questions
    function getQuizDisp(uint _quizId) view public returns(uint, string memory, uint, uint) {
       QuizDisplayable memory temp = quizDisp[_quizId];
       return (temp.id,temp.name,temp.fee,temp.pool);
    }
 
-    function setAttempt(uint _quizId) public {
-        quizzes[_quizId].attempts[msg.sender] = true;
-    }
+   // Adds the user to the list of users who have attemped this quiz
+   function setAttempt(uint _quizId) public {
+      quizzes[_quizId].attempts[msg.sender] = true;
+   }
 
-    function canSkip(uint _quizId) view public returns (bool) {
-        bool skip = quizzes[_quizId].hasPaid[msg.sender] && !quizzes[_quizId].attempts[msg.sender];
-        return skip;
-    }
+   // Checks to see if the user has paid but has not attempted
+   // This is used to bypass the front-end form to submit the fee
+   function canSkip(uint _quizId) view public returns (bool) {
+      bool skip = quizzes[_quizId].hasPaid[msg.sender] && !quizzes[_quizId].attempts[msg.sender];
+      return skip;
+   }
 
    // Requires that the quiz event exists
    // Requires that the account trying to access the quiz information has not taken it before
-   // Once the account receives the quiz, add the account to the list of accounts that have
-   // attempted this quiz
+   // Once the account receives the quiz, add the account to the list of accounts that have attempted this quiz
    function getQuiz (uint _quizId) view public returns (string memory, string memory, string memory, string memory, string memory) {
       require(_quizId > 0 && _quizId <= numQuizzes);
       require(!quizzes[_quizId].attempts[msg.sender]);
@@ -83,9 +89,10 @@ contract Quiz {
    // Requires that the account has not attempted the quiz before
    // Allows users to send money
    // The contract's account balance will hold all of the ether for all QuizEvent pools
+   // Require that amount paid is greater than equal to current amount in Pool
    // Add fee to the pool of _quizId
-   //Require that amount paid is greater than equal to current amount in Pool
-   //Fetch the quiz for the user to access.
+   // Add the user to the mapping hasPaid to indicate that the user has paid the appropriate fee to take the quiz
+   // Fetch the quiz for the user to access.
    function payToPlay (uint _quizId) public payable {
       require(_quizId > 0 && _quizId <= numQuizzes);
       require(!quizzes[_quizId].attempts[msg.sender]);
@@ -95,6 +102,7 @@ contract Quiz {
       emit fetchquiz(_quizId);
    }
 
+   // Returns the number of QuizEvents
    function getNum() public view returns (uint) {
        return numQuizzes;
    }
@@ -106,15 +114,10 @@ contract Quiz {
       return quizzes[_quizId].pool;
    }
 
-   function getCorr(uint _quizId) view public returns (string memory) {
-       return quizzes[_quizId].q1.correctAns;
-   }
-
    // Requires that the quiz event exists
    // Requires that the account has paid the fee to attempt the quiz
    // Requires that the account has attempted the quiz
-   // Hashes the question's correct answer and the answer submitted by the account and compares
-   // the two Hashes
+   // Hashes the question's correct answer and the answer submitted by the account and compares the two Hashes
    // If the two hashes are equal, then return true, otherwise false
    function scoreAttempt (uint _quizId, string memory _ans) view public returns (bool) {
       require(_quizId > 0 && _quizId <= numQuizzes);
