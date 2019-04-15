@@ -128,10 +128,10 @@ contract Quiz {
    // Requires that the account has attempted the quiz
    // Transfer the amount of ether in the pool of _quizId to the winner
    // Set the _quizId pool amount to 0
-   function awardLottery (uint _quizId, address payable _winner) private {
-      require(quizzes[_quizId].hasPaid[msg.sender]);
-      require(quizzes[_quizId].attempts[msg.sender]);
-      _winner.transfer(quizzes[_quizId].pool);
+   function awardLottery (uint _quizId, address payable _winner) public {
+      require(quizzes[_quizId].hasPaid[_winner]);
+      require(quizzes[_quizId].attempts[_winner]);
+      _winner.transfer(quizzes[_quizId].pool * 1 wei);
       quizzes[_quizId].pool = 0;
    }
 }
