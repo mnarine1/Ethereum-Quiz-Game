@@ -36,6 +36,12 @@ ion-icon {
    margin: 0 30px:
 }
 
+.spacer {
+   width: 30px;
+   height: 30px;
+   float: left;
+}
+
 #appendPoint {
    position: fixed;
    top: 110px;

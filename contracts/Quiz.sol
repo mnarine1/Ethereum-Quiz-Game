@@ -14,6 +14,7 @@ contract Quiz {
    // Structure of a Quiz
    struct QuizEvent {
       uint id;
+      address creator;
       string name;
       uint fee;
       uint pool;
@@ -43,7 +44,7 @@ contract Quiz {
    // Upon contract creation, initialize number of quizzes to 0 and create a new Quiz Event
    constructor () public {
       numQuizzes = 0;
-      makeQuiz("Test Quiz 1", 1, 10, "2+2=", "4", "3", "5", "2");
+      makeQuiz("Test Quiz", 1, 0, "2+2=", "4", "3", "5", "2");
    }
 
    // Increment number of quizzes
@@ -52,7 +53,7 @@ contract Quiz {
    // Add the creator as a user who has attempted so the creator cannot attempt the quiz
    function makeQuiz (string memory _name, uint _fee, uint _pool, string memory _question, string memory _ans1, string memory _ans2, string memory _ans3, string memory _ans4) public {
       numQuizzes ++;
-      quizzes[numQuizzes] = QuizEvent(numQuizzes, _name, _fee, _pool, Question(_question, _ans1, _ans2, _ans3, _ans4));
+      quizzes[numQuizzes] = QuizEvent(numQuizzes, msg.sender,_name, _fee, _pool, Question(_question, _ans1, _ans2, _ans3, _ans4));
       quizDisp[numQuizzes] = QuizDisplayable(numQuizzes, _name, _fee, _pool);
       quizzes[numQuizzes].attempts[msg.sender] = true;
    }
@@ -94,9 +95,9 @@ contract Quiz {
    // Add the user to the mapping hasPaid to indicate that the user has paid the appropriate fee to take the quiz
    // Fetch the quiz for the user to access.
    function payToPlay (uint _quizId) public payable {
-      require(_quizId > 0 && _quizId <= numQuizzes);
-      require(!quizzes[_quizId].attempts[msg.sender]);
-      require(msg.value >= quizzes[_quizId].fee);
+      require(_quizId > 0 && _quizId <= numQuizzes); //checks if quiz exist
+      require(!quizzes[_quizId].attempts[msg.sender]); //checks if they have not attempted
+      require(msg.value >= quizzes[_quizId].fee);//if they paid the right amount
       quizzes[_quizId].pool += msg.value;
       quizzes[_quizId].hasPaid[msg.sender] = true;
       emit fetchquiz(_quizId);
@@ -109,9 +110,10 @@ contract Quiz {
 
    // Requires that the quiz exists
    // Returns the current pool amount of the QuizEvent _quizId
+   //Nice to show the user how much reward a certain quiz has
    function getPoolAmount (uint _quizId) view public returns (uint) {
-      require(_quizId > 0 && _quizId <= numQuizzes);
-      return quizzes[_quizId].pool;
+      require(_quizId > 0 && _quizId <= numQuizzes); //checking if quiz exosts
+      return quizzes[_quizId].pool; //returns pool balance
    }
 
    // Requires that the quiz event exists
@@ -134,7 +136,7 @@ contract Quiz {
    function awardLottery (uint _quizId, address payable _winner) public {
       require(quizzes[_quizId].hasPaid[_winner]);
       require(quizzes[_quizId].attempts[_winner]);
-      _winner.transfer(quizzes[_quizId].pool * 1 wei);
+      _winner.transfer(quizzes[_quizId].pool);
       quizzes[_quizId].pool = 0;
    }
 }
