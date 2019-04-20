@@ -285,3 +285,8 @@ h4 {
    font-size: 40px;
    color: #FFF;
 }
+
+#tqcon {
+   transition: all 500ms ease-in-out;
+   margin-top: 0vh;
+}
