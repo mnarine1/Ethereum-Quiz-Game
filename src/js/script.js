@@ -307,7 +307,7 @@ window.addEventListener('load', async () => {
    ];
 
    Quiz = new web3.eth.Contract(abi,
-   '0xA10C864111BE1255d325E8039a58aa3cd0F231e1');
+   /*Add Contract address here in signle quotes*/);
    console.log("Contract:");
    console.log(Quiz);
 
