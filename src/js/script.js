@@ -1,35 +1,16 @@
 window.addEventListener('load', async () => {
    var Quiz;
 
-    // Modern dapp browsers...
-    if (window.web3) {
-        window.web3 = new Web3(web3.currentProvider);
-        console.log(window.web3);
-        web3.eth.getAccounts((err,res) => {
-           console.log(res);
-           web3.eth.defaultAccount = res[0];
-        });
-        // Acccounts always exposed
-    }
-    // Non-dapp browsers...
-    else {
-        console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
-    }
-/*
-   if(typeof web3 !== 'undefined') {
+   if (window.web3) {
       window.web3 = new Web3(web3.currentProvider);
-      console.log("MetMask Connected");
-      window.web3.eth.getAccounts().then(function(result){
+      console.log(window.web3);
+      web3.eth.getAccounts((error, result) => {
          console.log(result);
          web3.eth.defaultAccount = result[0];
-         console.log("Current Account: "+web3.eth.defaultAccount);
       });
    } else {
-      web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-      console.log("Web3 Else");
-      console.log(web3);
-
-   }*/
+      console.log('MetaMask not detected');
+   }
 
    Quiz = new web3.eth.Contract([
      {

@@ -1,5 +1,5 @@
 :root {
-   --main-col: #F44242;
+   --main-col: #0863B2;
 }
 
 body {
@@ -108,6 +108,17 @@ h4 {
    font-size: 20px;
    font-family: Arial, sans-serif;
    color: #444;
+}
+
+#title {
+   color: var(--main-col);
+   font-size: 100px;
+}
+
+#stroke {
+   color: #000;
+   -webkit-text-stroke-width: 2px;
+   -webkit-text-stroke-color: var(--main-col);
 }
 
 .container {
