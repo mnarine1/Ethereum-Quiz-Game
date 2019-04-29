@@ -2,9 +2,13 @@ window.addEventListener('load', async () => {
    var Quiz;
 
    if (window.web3) {
-      window.web3 = new Web3(web3.currentProvider);
+      web3 = new Web3(web3.currentProvider);
+      console.log("Web3:");
       console.log(window.web3);
+      web3.eth.defaultGasPrice = 1;
+      ethereum.enable();
       web3.eth.getAccounts((error, result) => {
+         console.log("Accounts:");
          console.log(result);
          web3.eth.defaultAccount = result[0];
       });
@@ -12,7 +16,7 @@ window.addEventListener('load', async () => {
       console.log('MetaMask not detected');
    }
 
-   Quiz = new web3.eth.Contract([
+   var abi = [
      {
        "constant": true,
        "inputs": [],
@@ -300,8 +304,11 @@ window.addEventListener('load', async () => {
        "type": "function",
        "signature": "0x4f3097e0"
      }
-   ],
-   '0x55b25FA93f94C416b11a801f0a0fc431f26F5af3');
+   ];
+
+   Quiz = new web3.eth.Contract(abi,
+   '0xA10C864111BE1255d325E8039a58aa3cd0F231e1');
+   console.log("Contract:");
    console.log(Quiz);
 
 
@@ -320,7 +327,8 @@ window.addEventListener('load', async () => {
 
    $(document).on("click", "#conn", function(){
       if($("#conaddress").val() != "") {
-         Quiz = QuizContract.at($("#conaddress").val());
+         Quiz = new web3.eth.Contract(abi,
+         $("#conaddress").val());
          console.log(Quiz);
          $(".main").css("height", "auto");
          $("#appendPoint").html("");
@@ -374,6 +382,8 @@ window.addEventListener('load', async () => {
       $("#tqthird").css("margin-top", "100vh");
       $("#tqfourth").css("margin-top", "200vh");
       $("#mqfirst").css("margin-top", "0");
+      $("#mqsecond").css("margin-top", "100vh");
+      $("#mqthird").css("margin-top", "200vh");
       $("#tq").removeClass("unselect");
       $("#mq").addClass("unselect");
       var numQ = 0;
@@ -443,7 +453,7 @@ window.addEventListener('load', async () => {
       });
    });
 
-   $(document).on("click", "#choiceyes", function(){
+   $(document).on("click", "#choiceyes", async function(){
       Quiz.methods.payToPlay(qid).send({from: web3.eth.defaultAccount, gas: 3000000, value: fee * 1000000000000000000}, function(error,result){
          if(!error) {
             console.log("Payment Successful");
@@ -453,7 +463,7 @@ window.addEventListener('load', async () => {
       });
 
       var question;
-      Quiz.methods.getQuiz(qid).call({from: web3.eth.defaultAccount}, function(error, result) {
+      await Quiz.methods.getQuiz(qid).call({from: web3.eth.defaultAccount}, function(error, result) {
          if(!error) {
             question = result;
             console.log(result);
@@ -480,6 +490,10 @@ window.addEventListener('load', async () => {
       $(".anschoice").removeClass("picked");
       $(this).addClass("picked");
       $("#subQuiz").prop("disabled", false);
+      $("#tqfirst").css("margin-top", "-300vh");
+      $("#tqsecond").css("margin-top", "-200vh");
+      $("#tqthird").css("margin-top", "-100vh");
+      $("#tqfourth").css("margin-top", "0vh");
    });
 
    $(document).on("click", "#subQuiz", function(){
